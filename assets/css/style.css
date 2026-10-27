@@ -1,0 +1,1157 @@
+/* ====================================================================
+ * Modern CRM Design System & Pipeline Kanban Styles
+ * Font: Inter, Google Fonts
+ * ==================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary: #4338ca;
+    --primary-light: #4f46e5;
+    --primary-soft: #e0e7ff;
+    --whatsapp-green: #25D366;
+    --whatsapp-dark: #075E54;
+    --whatsapp-bg: #EFEAE2;
+    --whatsapp-bubble-out: #DCF8C6;
+    --whatsapp-bubble-in: #FFFFFF;
+    --whatsapp-blue-ticks: #34B7F1;
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* App Header */
+.app-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-badge {
+    background: linear-gradient(135deg, #1e40af, #4338ca);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.integration-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid #a7f3d0;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--whatsapp-green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+.btn-primary:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+}
+.btn-whatsapp:hover {
+    background: #20bd5a;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.btn-simulator {
+    background: #8b5cf6;
+    color: white;
+}
+.btn-simulator:hover {
+    background: #7c3aed;
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+/* Subheader & Stats */
+.pipeline-banner {
+    padding: 16px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.banner-title h1 {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.banner-title p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.pipeline-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-pill {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.stat-pill strong {
+    color: var(--text-main);
+    margin-left: 4px;
+}
+
+/* ====================================================================
+ * Search, Filters & View Switcher Bar
+ * ==================================================================== */
+.pipeline-controls-bar {
+    padding: 10px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.controls-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 650px;
+}
+
+.search-box-wrap {
+    position: relative;
+    flex: 1;
+}
+
+.search-box-wrap input {
+    width: 100%;
+    padding: 7px 12px 7px 32px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    font-size: 12.5px;
+    font-family: inherit;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.search-box-wrap input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.filter-select {
+    padding: 7px 26px 7px 11px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    font-size: 12px;
+    font-weight: 500;
+    background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+    color: #334155;
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.15s ease;
+}
+.filter-select:hover {
+    border-color: #94a3b8;
+}
+.filter-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.view-switcher-group {
+    display: inline-flex;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 7px;
+    border: 1px solid #e2e8f0;
+}
+
+.view-btn {
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+}
+
+.view-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Table Pipeline Container */
+.table-pipeline-container {
+    padding: 20px 24px;
+    display: none;
+    overflow-x: auto;
+}
+
+.table-pipeline-container.active {
+    display: block;
+}
+
+.crm-data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.crm-data-table th {
+    background: #f8fafc;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #475569;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.crm-data-table td {
+    padding: 12px 14px;
+    font-size: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #1e293b;
+}
+
+.crm-data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.crm-data-table tr:hover td {
+    background: #f8fafc;
+}
+
+.table-stage-select {
+    padding: 5px 24px 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    font-size: 11.5px;
+    background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+    color: #0f172a;
+    font-weight: 600;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.table-stage-select:hover {
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+}
+.table-stage-select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.table-msg-preview {
+    max-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.table-msg-text {
+    font-size: 11.5px;
+    color: #334155;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.table-msg-time {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.table-btn-group {
+    display: flex;
+    gap: 6px;
+}
+
+/* Kanban Board Layout */
+.kanban-container {
+    padding: 20px 24px;
+    overflow-x: auto;
+    min-height: calc(100vh - 160px);
+    display: none;
+}
+.kanban-container.active {
+    display: block;
+}
+
+.kanban-container::-webkit-scrollbar {
+    height: 7px;
+}
+.kanban-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.kanban-board {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    min-width: max-content;
+    padding-bottom: 30px;
+}
+
+.kanban-column {
+    background: #f8fafc;
+    border-radius: 10px;
+    width: 285px;
+    min-width: 285px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e8f0;
+    transition: background-color 0.2s;
+}
+
+.kanban-column.drag-over {
+    background: #eef2ff;
+    border-color: #6366f1;
+}
+
+.column-header {
+    padding: 11px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom: 2px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.column-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.column-color-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.column-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.column-count {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.column-cards {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-height: 120px;
+}
+
+/* Empty Column Dropzone State */
+.column-empty-placeholder {
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 28px 14px;
+    text-align: center;
+    color: #94a3b8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: #ffffff;
+    margin: 4px 0;
+}
+.column-empty-placeholder span {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+}
+.column-empty-placeholder small {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+/* ====================================================================
+ * Modern Compact Kanban Card
+ * ==================================================================== */
+.kanban-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 11px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+    border: 1px solid #e2e8f0;
+    cursor: grab;
+    transition: all 0.16s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kanban-card:hover {
+    box-shadow: 0 5px 12px -2px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+/* Card Header: Identity + Type Badge */
+.card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.card-lead-identity {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    flex: 1;
+}
+
+.lead-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+.lead-meta {
+    min-width: 0;
+    flex: 1;
+}
+
+.lead-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lead-company {
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+}
+
+.type-pill {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+}
+.type-pill.lead {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #dbeafe;
+}
+.type-pill.contact {
+    background: #fefce8;
+    color: #a16207;
+    border: 1px solid #fef08a;
+}
+
+/* Contact Info Strip: Phone + Direct WhatsApp Chip */
+.card-contact-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.contact-number {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #334155;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+}
+
+.wa-direct-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #059669;
+    text-decoration: none;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #ecfdf5;
+    border: 1px solid #d1fae5;
+    transition: all 0.15s;
+}
+.wa-direct-chip:hover {
+    background: #d1fae5;
+    color: #047857;
+}
+
+/* WhatsApp Message Interaction (Compact & Sleek) */
+.card-message-compact {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 2.5px solid #10b981;
+    border-radius: 5px;
+    padding: 5px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.msg-compact-text {
+    font-size: 11px;
+    line-height: 1.35;
+    color: #1e293b;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.msg-compact-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.msg-compact-time {
+    font-size: 9.5px;
+    color: #94a3b8;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 10px;
+}
+.status-badge.sent {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+.status-badge.delivered {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+.status-badge.read {
+    background: #f0f9ff;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+}
+.status-badge.failed {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.status-tick {
+    font-size: 10px;
+    font-weight: bold;
+}
+.tick-read {
+    color: #0284c7;
+}
+.tick-failed {
+    color: #dc2626;
+}
+
+/* Next Action Pill */
+.card-next-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    background: #f8fafc;
+    padding: 3px 7px;
+    border-radius: 4px;
+    border: 1px solid #f1f5f9;
+}
+.step-label {
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 8.5px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+.step-text {
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+/* Card Action Buttons */
+.card-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 1px;
+}
+
+.btn-card-chat,
+.btn-card-secondary {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.btn-card-chat:hover,
+.btn-card-secondary:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.btn-card-send,
+.btn-card-primary {
+    background: #059669;
+    border: 1px solid #047857;
+    color: #ffffff;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.btn-card-send:hover,
+.btn-card-primary:hover {
+    background: #047857;
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-dialog {
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 580px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    overflow: hidden;
+    animation: modalSlide 0.25s ease;
+}
+
+@keyframes modalSlide {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+.form-control {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #f8fafc;
+}
+
+/* ====================================================================
+ * Click-to-Call Phone Dialer
+ * ==================================================================== */
+.phone-dialer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #334155;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+.phone-dialer-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+.phone-dialer-link svg {
+    color: #64748b;
+    transition: color 0.15s ease;
+}
+.phone-dialer-link:hover svg {
+    color: #2563eb;
+}
+
+.table-dialer-link,
+.table-phone-link {
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+    font-weight: 600;
+    color: #1e293b;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.table-dialer-link:hover,
+.table-phone-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.chat-dialer-link {
+    font-size: 11.5px;
+    color: #2563eb;
+}
+
+/* ====================================================================
+ * Status Badges & Card Outreach Actions
+ * ==================================================================== */
+.status-badge.scheduled {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+
+.btn-card-welcome {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    margin-bottom: 4px;
+}
+.btn-card-welcome:hover {
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+}
+.table-btn-group .btn-card-welcome {
+    width: auto;
+    margin-bottom: 0;
+    padding: 4px 9px;
+}
+
+/* Modal Schedule Controls */
+.send-mode-toggle {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 6px;
+    padding: 3px;
+    margin-bottom: 14px;
+    border: 1px solid #e2e8f0;
+}
+.send-mode-btn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.send-mode-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.schedule-details-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+.schedule-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.preset-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.preset-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+
+.auto-welcome-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: #166534;
+    line-height: 1.45;
+}
+
+/* Quick Response Template Chips */
+.template-chips-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+.template-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+}
+.btn-template-chip {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-template-chip:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
+/* Chat Header Contrast Fix */
+.whatsapp-chat-header .chat-dialer-link {
+    color: rgba(255, 255, 255, 0.9);
+}
+.whatsapp-chat-header .chat-dialer-link svg {
+    color: rgba(255, 255, 255, 0.8);
+}
+.whatsapp-chat-header .chat-dialer-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+.whatsapp-chat-header .chat-dialer-link:hover svg {
+    color: #ffffff;
+}
+
+/* Modern Polished Toast Notifications */
+.crm-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 11px 18px;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1);
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    max-width: 420px;
+    line-height: 1.4;
+}
+.crm-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+.crm-toast-success {
+    background: #059669;
+    border: 1px solid #047857;
+}
+.crm-toast-error {
+    background: #dc2626;
+    border: 1px solid #b91c1c;
+}
+.crm-toast-warning {
+    background: #d97706;
+    border: 1px solid #b45309;
+}
+.crm-toast-info {
+    background: #2563eb;
+    border: 1px solid #1d4ed8;
+}
+
+

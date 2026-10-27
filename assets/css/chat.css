@@ -1,0 +1,108 @@
+/* ====================================================================
+ * WhatsApp Authentic Chat Modal Styling
+ * ==================================================================== */
+
+.whatsapp-chat-header {
+    background: #075E54;
+    color: white;
+}
+.whatsapp-chat-header .modal-title {
+    color: white;
+}
+.whatsapp-chat-header .modal-close {
+    color: rgba(255,255,255,0.8);
+}
+.whatsapp-chat-header .modal-close:hover {
+    color: white;
+}
+
+.chat-avatar {
+    width: 38px;
+    height: 38px;
+    background: #128C7E;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.chat-modal-body {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+    background-color: #efeae2;
+    background-image: radial-gradient(#d4cbbe 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
+.whatsapp-chat-timeline {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Chat Speech Bubbles */
+.chat-bubble {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    word-break: break-word;
+}
+
+.chat-bubble.outgoing {
+    align-self: flex-end;
+    background: #dcf8c6;
+    border-top-right-radius: 2px;
+}
+
+.chat-bubble.incoming {
+    align-self: flex-start;
+    background: #ffffff;
+    border-top-left-radius: 2px;
+}
+
+.bubble-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 10px;
+    color: #8696a0;
+}
+
+.bubble-ref {
+    font-size: 9px;
+    color: #94a3b8;
+    margin-bottom: 2px;
+    font-family: monospace;
+}
+
+.chat-composer-row {
+    padding: 10px 14px;
+    background: #f0f2f5;
+    border-top: 1px solid #d1d7db;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-composer-row .form-control {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 9px 16px;
+    border: none;
+}
+.chat-composer-row .form-control:focus {
+    box-shadow: none;
+}

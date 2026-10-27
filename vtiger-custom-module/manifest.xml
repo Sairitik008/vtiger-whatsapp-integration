@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <exporttime>2026-10-25 15:30:00</exporttime>
+    <name>WhatsApp</name>
+    <label>WhatsApp Integration</label>
+    <parent>Tools</parent>
+    <version>1.0.0</version>
+    <short_description>Open-Source WhatsApp CRM Integration & Webhook Handler</short_description>
+    <dependencies>
+        <vtiger_version>7.0.0</vtiger_version>
+        <vtiger_max_version>8.2.0</vtiger_max_version>
+    </dependencies>
+    <tables>
+        <table>
+            <name>vtiger_whatsappmessages</name>
+            <sql><![CDATA[
+                CREATE TABLE IF NOT EXISTS `vtiger_whatsappmessages` (
+                    `whatsappmessageid` INT(19) NOT NULL PRIMARY KEY,
+                    `message_id` VARCHAR(100) NOT NULL UNIQUE,
+                    `lead_id` INT(19) NULL,
+                    `contact_id` INT(19) NULL,
+                    `sender_number` VARCHAR(30) NOT NULL,
+                    `recipient_number` VARCHAR(30) NOT NULL,
+                    `direction` ENUM('outgoing', 'incoming') NOT NULL,
+                    `message_content` TEXT NOT NULL,
+                    `status` ENUM('sent', 'delivered', 'read', 'failed') NOT NULL DEFAULT 'sent',
+                    `failure_reason` VARCHAR(255) DEFAULT NULL,
+                    `sent_at` DATETIME NOT NULL,
+                    `delivered_at` DATETIME DEFAULT NULL,
+                    `read_at` DATETIME DEFAULT NULL,
+                    INDEX `idx_msg_id` (`message_id`),
+                    INDEX `idx_lead_id` (`lead_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ]]></sql>
+        </table>
+    </tables>
+    <customlinks>
+        <customlink>
+            <linktype>DETAILVIEWBASIC</linktype>
+            <linklabel>Send WhatsApp Message</linklabel>
+            <linkurl>javascript:WhatsApp_Detail_Js.openSendModal();</linkurl>
+            <linkicon>whatsapp.png</linkicon>
+        </customlink>
+        <customlink>
+            <linktype>DETAILVIEWRELATED</linktype>
+            <linklabel>WhatsApp Conversations</linklabel>
+            <linkurl>index.php?module=WhatsApp&amp;view=Detail&amp;record=$RECORD$</linkurl>
+        </customlink>
+    </customlinks>
+</module>

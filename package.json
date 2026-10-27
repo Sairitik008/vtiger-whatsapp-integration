@@ -1,0 +1,18 @@
+{
+  "name": "vtiger-whatsapp-crm",
+  "version": "1.0.0",
+  "description": "Vtiger CRM Open-Source WhatsApp Integration & Sales Pipeline",
+  "scripts": {
+    "start": "node bridge/server.js",
+    "bridge": "node bridge/server.js"
+  },
+  "keywords": [
+    "vtiger",
+    "whatsapp",
+    "crm",
+    "baileys",
+    "pipeline"
+  ],
+  "author": "Open-Source Contributor",
+  "license": "MIT"
+}

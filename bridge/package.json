@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-bridge",
+  "version": "1.0.0",
+  "description": "Free Open-Source WhatsApp Web Multi-Device Bridge for Vtiger CRM",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.8",
+    "express": "^4.19.2",
+    "pino": "^9.1.2",
+    "qrcode": "^1.5.3"
+  }
+}
