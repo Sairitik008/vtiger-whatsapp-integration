@@ -1,0 +1,5 @@
+.env
+.git
+runtime/
+vtigercrm/
+vtigercrm8.4.0.tar.gz

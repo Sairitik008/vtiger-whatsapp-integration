@@ -1,207 +1,110 @@
-# Vtiger CRM WhatsApp Integration & Lead Pipeline
+# Vtiger WhatsApp Integration
 
-**Author:** PHP Developer  
-**Position:** PHP Developer  
-**Company:** NB Entrepreneurs  
-**Date:** October 2026  
+This project uses the official Vtiger CRM Open Source 8.4.0 release as its base. Custom WhatsApp integration code will be added as Vtiger-compatible modules; existing Vtiger source and external XAMPP projects are kept separate.
 
----
+The local runtime uses Docker Compose so the CRM database is isolated from other databases on the machine. The web service binds to `127.0.0.1` only and is not publicly exposed. Vtiger's installer registration hostname (`stats.vtiger.com`) is mapped to loopback in the app container to prevent the optional registration request from sending installer details externally.
 
-## Overview
+## Current status
 
-This project is a technical implementation for integrating WhatsApp messaging with Vtiger CRM, along with a Lead/Contact management pipeline. 
+Vtiger 8.4.0 is installed locally. Admin login and the Dashboard, Leads, and Contacts pages have been verified. A fresh install left the dashboard-widget table without columns required by Vtiger 8.4.0; this disabled the Dashboard's Add Widget control. The repeatable compatibility patch in `database/patches/vtiger-dashboard-widgets.sql` is applied to the current database, and a Leads by Status widget loads. The CRM has no Leads yet, so the widget correctly reports no matching data. Apply the patch after completing the Vtiger installer on future installs.
 
-Per the assignment requirements, the entire implementation is built using free and open-source tools (PHP, MySQL, Apache, vanilla JavaScript, and CSS). Because official WhatsApp Business API providers require commercial accounts or paid per-conversation fees, I built a local WhatsApp gateway simulator that replicates the full webhook lifecycle (sending, status callbacks, incoming replies, and contact mapping).
+The local WhatsApp module is installed. Its default transport is a mock: simulated outbound messages have per-form idempotency keys, guarded delivery/read/failure transitions, duplicate-protected inbound events, exact phone matching to Leads/Contacts, and authenticated message-list refresh approximately every five seconds. The project also contains an **unverified, opt-in adapter** for Meta's official WhatsApp Business Cloud API. It is disabled by default; no API credentials or public webhook are configured, and no real WhatsApp delivery has been tested. Do not treat this code as production-ready. Keep `.env` private and never commit credentials.
 
----
+The Vtiger 8.4.0 fresh-install schema omitted `color` from `vtiger_salutationtype`, but list-view picklist rendering expects that column. The bundled schema has a nullable `VARCHAR(10)` compatibility column, and the running local database has the corresponding column. This is a schema-only adjustment; Vtiger runtime code is unchanged.
 
-## System Workflow & Core Features
+## Requirements
 
-1. **Lead & Contact Management:**
-   - Visual Kanban pipeline displaying records across stages (`New Lead`, `WhatsApp Contacted`, `Conversation Started`, `Qualified`, `Follow-up`, `Opportunity`, `Closed Won`, `Closed Lost`).
-   - Cards display contact details, latest WhatsApp interaction, timestamp, and message status.
-   - Stage changes can be made via drag-and-drop or status updates, persisted via REST API.
+- Docker Desktop with Docker Compose
+- The Vtiger 8.4.0 source in `vtigercrm/`
+- Internet access for the first image build
 
-2. **WhatsApp Messaging from CRM:**
-   - Users can dispatch messages directly from any lead or contact record.
-   - Generates unique reference IDs (`WAM-YYYYMMDD...`).
-   - Records outgoing messages in MySQL with an initial status of `sent`.
-   - Updates the lead's latest interaction snapshot and advances new leads to `WhatsApp Contacted`.
+## First-time setup
 
-3. **Inbound Webhook Handling:**
-   - Dedicated endpoint (`/api/webhook.php`) processing inbound JSON payloads.
-   - Checks message IDs for idempotency to handle potential webhook retries without duplicate records.
-   - Normalizes incoming sender numbers to standard E.164 digits for database matching.
+1. Copy `.env.example` to `.env`.
+2. Set `VTIGER_DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` to different, strong random values. Keep `.env` private; it is excluded from Git.
+3. From this directory, build and start the services:
 
-4. **Automatic Lead/Contact Mapping:**
-   - Queries `leads_contacts` by indexed normalized phone numbers.
-   - **Matched Records:** Automatically attaches incoming replies to the contact's conversation history and updates their pipeline stage to `Conversation Started`.
-   - **Unmatched Numbers:** Automatically provisions a new record (`Inbound +[number]`) under `New Lead` so incoming queries are never dropped.
+   ```powershell
+   docker compose up --build -d
+   ```
 
-5. **Message Status Lifecycle:**
-   - Tracks the 4 states: `sent` -> `delivered` -> `read` (and `failed`).
-   - Ingests delivery receipts via webhook callbacks and updates both the message log and the lead's Kanban card.
-   - Includes failure simulation with reason logging for testing exception paths.
+4. Open `http://127.0.0.1:8080` and complete the Vtiger installer.
+5. In the installer, use database host `db`, the database name/user/password from `.env`, and database port `3306`.
+6. Apply the Dashboard schema compatibility patch from this directory:
 
-6. **Conversation History:**
-   - Two-way chat timeline inside each record displaying incoming and outgoing messages chronologically.
-   - Shows timestamps, unique message IDs, and delivery ticks (single check for sent, double check for delivered, blue double check for read, warning badge for failed).
-   - In-modal composer for sending replies.
+   ```powershell
+   $database = (Get-Content .\.env | Where-Object { $_ -match '^VTIGER_DB_NAME=' } | Select-Object -First 1) -replace '^VTIGER_DB_NAME=', ''
+   if (-not $database) { $database = 'vtiger' }
+   $mysqlCommand = 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot "' + $database + '"'
+   Get-Content .\database\patches\vtiger-dashboard-widgets.sql -Raw |
+     docker compose exec -T db sh -c $mysqlCommand
+   ```
 
-7. **Local Gateway & Webhook Simulator:**
-   - Developer/evaluator dashboard to test all required scenarios locally.
-   - One-click triggers for delivery receipts (`delivered`, `read`, `failed`).
-   - Form to simulate incoming customer messages from known or unknown numbers.
-   - Live JSON inspector showing outgoing requests, webhook callbacks, and worker execution logs.
+   The patch is safe to rerun and only adds missing nullable columns and a foreign key; it keeps existing widget records and assigns any unassigned widgets to the user's default Dashboard tab.
 
-8. **Automated Lead Generation Outreach:**
-   - **Inbound Inquiries:** When a prospective customer contacts the webhook from an unregistered number, the system automatically registers them and immediately dispatches a personalized welcome & qualification message, advancing them to `WhatsApp Contacted`.
-   - **One-Click Welcome Outreach:** Dedicated `Send Welcome Outreach` button on New Leads allows sales agents to trigger automated introductory messaging with 1 click.
-   - **CRM Lead Creation:** Option to automatically send a welcome WhatsApp message upon creating a new lead.
+7. Install or update the WhatsApp module and its schema:
 
-9. **Scheduled Message Sending (Cron Worker):**
-   - Supports scheduling WhatsApp messages for a future delivery date & time (`scheduled_at`).
-   - Provides quick scheduling presets (`+1 Hour`, `+3 Hours`, `Tomorrow 10 AM`, `Tomorrow 3 PM`).
-   - Real-time status tracking with a distinct `Scheduled` indicator across Kanban cards, Table view, and Chat history.
-   - `/api/scheduled_dispatch.php` worker simulates background cron execution to dispatch due messages.
+   ```powershell
+   docker compose exec -T app php modules/WhatsApp/install.php
+   ```
 
-10. **Interactive Click-to-Dialer:**
-    - Every phone number across Kanban cards, Table rows, and the Chat modal header is a live `tel:` protocol link, allowing instant dialing from native phone dialers or desktop calling applications.
+   It is safe to rerun. It creates the message, event, and outbox tables, applies missing columns, and adds a **WhatsApp Mock** action to Lead and Contact detail pages. The install script is CLI-only.
 
-11. **Vtiger CRM Module Structure:**
-    - Standalone Vtiger module files located in `vtiger-custom-module/` including `manifest.xml`, CRMEntity class `WhatsApp.php`, and action controller `Webhook.php` for integration with Vtiger 7.x/8.x installations.
+## Local WhatsApp mock demo
 
----
+1. Open **WhatsApp** from the CRM's Tools menu, or open a Lead/Contact and choose **WhatsApp Mock**.
+2. Submit an outbound mock message. It is saved locally as `SENT`; nothing is sent to a phone or external service. Repeated submission of the same form request ID does not create a second message. Open WhatsApp module pages refresh the message list automatically about every five seconds while visible.
+3. Use **DELIVERED** then **READ**, or choose **FAILED** while a message is `SENT`, to test the allowed status transitions.
+4. Submit an inbound mock event. The phone is normalized to digits and compared exactly against visible Lead/Contact phone and mobile values. It links only when exactly one CRM record matches; unmatched and ambiguous events remain unlinked.
+5. To verify idempotency, submit the same inbound event again with the same Event ID. The duplicate is detected and no second message is created.
 
-## Tech Stack & Open-Source Compliance
+The mock module requires a logged-in Vtiger user and Vtiger's standard CSRF validation. Polling is near-real-time UI refresh, not transport to/from WhatsApp. The local mock inbound action is authenticated and is not the public provider webhook.
 
-| Component | Technology | Notes |
-| :--- | :--- | :--- |
-| Backend | PHP 8.2 | Object-oriented MVC structure, PDO prepared statements |
-| Database | MySQL 8.0 / MariaDB | InnoDB engine, normalized tables, indexed lookups |
-| Web Server | Apache 2.4 (XAMPP) | Local development server |
-| Frontend | Vanilla JavaScript (ES6) | Native HTML5 Drag and Drop, Fetch API |
-| Styling | Vanilla CSS3 | Custom flexbox/grid layout, Inter font |
-| Dependencies | None | Built without paid APIs, third-party SaaS, or bloated libraries |
+## Official Meta Cloud API groundwork (not production-ready)
 
----
+The optional adapter uses Meta's official Cloud API directly and does not require a paid intermediary. Real WhatsApp use is **not guaranteed to be free**: Meta's current pricing and eligibility rules, hosting, a public domain/TLS, and operations may incur costs. Verify current terms before enabling it. This adapter has not been tested with real credentials, an externally reachable webhook, approved business assets, or a production deployment.
 
-## Project Structure
+The safe defaults are `WHATSAPP_TRANSPORT=mock` and `WHATSAPP_LIVE_SEND_ENABLED=0`. Leave them unchanged for the local demo. Live mode requires Meta-approved setup and all configuration: Graph API version, phone-number ID, a system Vtiger user ID, access token, app secret, and webhook verify token. Supply secrets through the deployment platform's secret manager; if using `*_FILE`, mount the referenced secret files read-only into **both** the web and worker containers. Do not put live credentials in source control, the web root, or screenshots.
 
-```
-vtiger-whatsapp-crm/
-├── api/
-│   ├── send.php               # Endpoint for sending WhatsApp messages
-│   ├── webhook.php            # Webhook receiver for inbound messages & receipts
-│   ├── chat.php               # Fetches conversation history by lead ID
-│   ├── leads.php              # CRUD operations for pipeline leads
-│   ├── update_stage.php       # Updates lead pipeline stage
-│   ├── scheduled_dispatch.php # Cron dispatcher worker for scheduled messages
-│   └── simulator_helper.php   # Supplies active messages & logs to simulator
-├── assets/
-│   ├── css/
-│   │   ├── style.css          # Kanban board layout and core styles
-│   │   ├── chat.css           # Chat timeline and message bubble styles
-│   │   └── simulator.css      # Simulator dashboard styles
-│   └── js/
-│       ├── pipeline.js        # Drag-and-drop and board interactions
-│       ├── chat.js            # Chat modal loader and message rendering
-│       └── simulator.js       # Webhook trigger handlers and log viewer
-├── includes/
-│   └── db.php                 # Database connection singleton & phone normalizer
-├── models/
-│   ├── Lead.php               # Data model for leads, contacts, and pipeline logic
-│   └── Message.php            # Data model for WhatsApp messages and status updates
-├── services/
-│   └── WhatsAppGateway.php    # Gateway abstraction layer for messaging workflows
-├── vtiger-custom-module/      # Vtiger standard extension files
-│   ├── manifest.xml           # Module manifest for Vtiger Module Manager
-│   └── modules/
-│       └── WhatsApp/
-│           ├── WhatsApp.php   # Vtiger CRMEntity class
-│           └── actions/
-│               └── Webhook.php# Vtiger action controller for webhooks
-├── bridge/                    # Free Open-Source WhatsApp Web Multi-Device Bridge (Baileys)
-│   ├── server.js              # Express REST API, QR Code generator & Webhook forwarder
-│   └── package.json           # Node.js dependencies (@whiskeysockets/baileys, express, qrcode)
-├── package.json               # Root npm scripts ("npm start" launches bridge in VS Code)
-├── .vscode/                   # VS Code configuration
-│   └── tasks.json             # 1-click VS Code build and test tasks
-├── schema.sql                 # Database creation and seed data script
-├── ARCHITECTURE.md            # Technical details, database design, and API specs
-└── index.php                  # Main application dashboard (Board & Table views)
+Only after independent security, privacy, permissions, and deployment review:
+
+1. Configure the Meta business assets and official Cloud API credentials using Meta's current documentation.
+2. Set `WHATSAPP_TRANSPORT=meta`, supply all required settings, then set `WHATSAPP_LIVE_SEND_ENABLED=1` only when explicitly authorized.
+3. Run the module installer from the setup section to apply the outbox/event schema.
+4. Deploy the application at a stable HTTPS address and register `https://<your-host>/modules/WhatsApp/webhook.php` as the callback with Meta. Use the same high-entropy verify token in the Meta configuration and the secret manager.
+5. Start the optional queue worker with `docker compose --profile whatsapp-worker up -d app db whatsapp-worker` after configuring secrets for both containers. Do not run it as a web request.
+6. Verify webhook challenges, signed event handling, provider acceptance, delivery status, and recovery behavior in a non-production Meta test environment before considering production use.
+
+Current scope and blockers:
+
+- The adapter accepts inbound **text only** and sends free-text replies only when an inbound message from that number is within the 24-hour service window. Approved template messages, media, opt-in evidence management, unsubscribe handling, and business-policy workflows are not implemented.
+- Outbound and webhook work is queued. Explicit rate limits have bounded retries; ambiguous outbound outcomes are marked `UNKNOWN` and must be reconciled with provider status before any manual retry to avoid duplicate sends.
+- Inbound messages matched to exactly one Lead/Contact are visible only to CRM users permitted to view that record. Unmatched messages remain visible to the configured integration account; configure ownership and operational access deliberately.
+- Raw webhook payloads are cleared after successful processing or terminal failure, but CRM message contents currently have no retention/deletion policy. Define and implement one before production.
+- The worker, schema upgrade, and signature helpers have received local checks, but end-to-end live delivery, webhook retry/order behavior, permission handling, load, backups, retention, and production deployment have not been verified. This is development groundwork, not a production-ready integration.
+
+No unofficial WhatsApp Web automation or reverse-engineered client is used. Do not expose the current local Docker setup publicly or enable live sends until the listed blockers are resolved.
+
+The database is stored in the Docker volume `mysql_data` and survives container restarts. `docker compose down` stops the services without deleting that data. **Do not use `docker compose down -v` unless you intend to delete the local CRM database.**
+
+## Useful commands
+
+```powershell
+docker compose ps
+docker compose logs -f app
+docker compose logs -f db
+docker compose down
 ```
 
----
+Change `VTIGER_HTTP_PORT` in `.env` if port 8080 is already in use, then recreate the app container with `docker compose up -d`.
 
-## Installation & Setup
+## Deployment and WhatsApp scope
 
-### Requirements:
-- PHP 8.0 or higher
-- MySQL 5.7+ or MariaDB 10.3+
-- Apache web server (XAMPP / Laragon / standard LAMP stack)
+This setup is a local development/demo environment, not a public production deployment. Public hosting must be evaluated for runtime compatibility, persistent storage, webhook reachability, uptime, security, and payment risk. No live WhatsApp API or external WhatsApp account is configured.
 
-### Step 1: Database Setup
-Import `schema.sql` into MySQL:
-```bash
-mysql -u root -p < schema.sql
-```
-This creates the database `vtiger_whatsapp_crm` with the required tables and initial seed leads.
+## Runtime components
 
-Database credentials can be adjusted in `includes/db.php`:
-```php
-private const DB_HOST = '127.0.0.1';
-private const DB_NAME = 'vtiger_whatsapp_crm';
-private const DB_USER = 'root';
-private const DB_PASS = '';
-```
-
-### Step 2: Configure Web Server
-Place the project in your Apache document root:
-- Windows (XAMPP): `C:\xampp\htdocs\vtiger-whatsapp-crm`
-- Linux: `/var/www/html/vtiger-whatsapp-crm`
-
-Ensure Apache and MySQL services are running.
-
-### Step 3: Access the Application
-Open your browser and navigate to:
-```
-http://localhost/vtiger-whatsapp-crm/
-```
-
----
-
-## Verifying the 13 Test Cases
-
-The application can be verified step-by-step:
-
-1. **Pipeline Display:** The home screen displays the 8 pipeline stages with seed leads categorized by status.
-2. **Send Outgoing Message:**
-   - Click "Send Msg" on *Rahul Sharma* (`+91 98230 12345`).
-   - Enter message text and submit.
-   - The card updates with the new message preview and status `Sent`.
-3. **Simulate Delivery Receipt (`delivered`):**
-   - Click "Webhook & Gateway Simulator" in the top bar.
-   - Select the message reference from the dropdown and click "Trigger Delivered".
-   - The card status updates to `Delivered` (`✓✓`).
-4. **Simulate Read Receipt (`read`):**
-   - In the simulator, click "Trigger Read".
-   - The card status updates to `Read` with blue double checkmarks (`✓✓`).
-5. **Simulate Inbound Customer Reply:**
-   - In the simulator under "Simulate Inbound Customer Reply", enter `+91 98230 12345` with message: *"Yes, please share the proposal."*
-   - Click "Dispatch Incoming Webhook".
-   - The webhook matches Rahul Sharma, records the incoming message, and moves the card to `Conversation Started`.
-6. **Simulate Unmatched Inbound Number:**
-   - In the simulator, enter a new number: `+91 70000 11111` with message: *"Need quotation for bulk order."*
-   - Click "Dispatch Incoming Webhook".
-   - The webhook creates a new lead under the `New Lead` stage with the message attached.
-7. **View Conversation History:**
-   - Click "Chat History" on any lead to inspect the full two-way chat transcript with message IDs, timestamps, and delivery indicators.
-8. **Simulate Message Failure:**
-   - In the "Send Msg" modal, check "Simulate Delivery Failure scenario" and submit.
-   - The message is logged as `failed`, and the card displays a red warning badge with the failure reason.
-9. **Pipeline Stage Transition:**
-   - Drag a lead card from one column to another (e.g., from `Qualified` to `Opportunity`).
-   - The position is updated and saved asynchronously via `/api/update_stage.php`.
-10. **Inspect Raw Webhook Payloads:**
-    - The bottom of the simulator displays the raw JSON payloads and response codes for debugging and verification.
+- Vtiger CRM Open Source 8.4.0
+- PHP 8.2 with Apache HTTP Server
+- MySQL 8.0
+- Docker Compose
